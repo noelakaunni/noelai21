@@ -1,0 +1,42 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat with Assistant</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="chat-container">
+    <div class="assistant-message">Welcome! Type your message below to chat with the assistant.</div>
+    <div id="chat-box">
+      <!-- Messages will be displayed here dynamically -->
+    </div>
+    <div class="user-message">
+      <input type="text" id="user-input" placeholder="Type your message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+  
+  <script>
+    function sendMessage() {
+      var userInput = document.getElementById("user-input").value;
+      fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ "message": userInput })
+      })
+      .then(response => response.json())
+      .then(data => {
+        var chatBox = document.getElementById("chat-box");
+        var userMessage = '<div class="user-message">' + userInput + '</div>';
+        var assistantMessage = '<div class="assistant-message">' + data.reply + '</div>';
+        chatBox.innerHTML += userMessage + assistantMessage;
+        document.getElementById("user-input").value = "";
+      })
+      .catch(error => console.error("Error:", error));
+    }
+  </script>
+</body>
+</html>
